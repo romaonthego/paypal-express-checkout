@@ -1,0 +1,18 @@
+= PayPal Express Checkout easy integration.
+
+== 1. Create object instance:
+
+  $paypal = new PaypalExpressCheckout($gateway);
+
+== 2. Redirect user to PayPal to obtain charging permissions
+
+  $paypal->doExpressCheckout(123.45, 'Test service', 'inv123', 'USD', $resultData);
+
+== 3. Perform payment, token and PayerID are being returned with GET response from PayPal
+
+  $paypal->doPayment($_GET['token'], $_GET['PayerID'], $resultData)
+
+For more information see index.php file.
+
+NOTE: 
+You need to have Express Checkout enabled on your live account
