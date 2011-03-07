@@ -99,8 +99,8 @@ class PaypalExpressCheckout extends PaypalBase {
         if ($resultData['ACK'] == 'SUCCESS') return true;
         return false;
     }
-	
-	/**
+    
+    /**
      * Perform refund base on transaction ID
      * 
      * If OK, returns true
@@ -116,22 +116,22 @@ class PaypalExpressCheckout extends PaypalBase {
      * 
      * @return bool
      */
-	public function doRefund($transactionId, $invoice = '', $isPartial = false,
-							 $amount = 0, $currencyCode = 'USD', $note = '', &$resultData) {
-		$data = array('METHOD' => 'RefundTransaction',
-					  'TRANSACTIONID' => $transactionId,
-					  'INVOICEID' => $invoice,
-					  'REFUNDTYPE' => $isPartial ? 'Partial' : 'Full',
-					  'NOTE' => $note);
-		if ($isPartial) {
-			$data['AMT'] = $amount;
-			$data['CURRENCYCODE'] = $currencyCode;
-		}
-		
-		if (!$resultData = $this->runQueryWithParams($data)) return false;
+    public function doRefund($transactionId, $invoice = '', $isPartial = false,
+                             $amount = 0, $currencyCode = 'USD', $note = '', &$resultData) {
+        $data = array('METHOD' => 'RefundTransaction',
+                      'TRANSACTIONID' => $transactionId,
+                      'INVOICEID' => $invoice,
+                      'REFUNDTYPE' => $isPartial ? 'Partial' : 'Full',
+                      'NOTE' => $note);
+        if ($isPartial) {
+            $data['AMT'] = $amount;
+            $data['CURRENCYCODE'] = $currencyCode;
+        }
+        
+        if (!$resultData = $this->runQueryWithParams($data)) return false;
         if ($resultData['ACK'] == 'SUCCESS') return true;
-		return false;
-	}
+        return false;
+    }
     
 }
 
