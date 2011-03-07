@@ -25,6 +25,15 @@ switch ($_GET['action']) {
                 print_r($resultData);
             }
         break;
+
+    case "refund":
+        $transactionId = '9SU82364E9556505C';
+        if ($paypal->doRefund($transactionId, 'inv123', false, 0, 'USD', '', $resultData))
+            echo 'Refunded: '.$resultData['GROSSREFUNDAMT']; else {
+                echo "Debugging what went wrong: ";
+                print_r($resultData);
+            }
+        break;
     
     case "cancel": // User canceled and returned to your store (to $gateway->cancelUrl)
         echo "User canceled";

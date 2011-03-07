@@ -99,6 +99,39 @@ class PaypalExpressCheckout extends PaypalBase {
         if ($resultData['ACK'] == 'SUCCESS') return true;
         return false;
     }
+	
+	/**
+     * Perform refund base on transaction ID
+     * 
+     * If OK, returns true
+     * If error, returns false
+     * 
+     * @param string $transactionId Unique identifier of a transaction
+     * @param string $invoice (Optional) Your own invoice or tracking number.
+     * @param bool $isPartial Partial or Full refund
+     * @param float $amount PayPal (Optional) Refund amount
+     * @param string $currencyCode A three-character currency code. This field is required for partial refunds. Do not use this field for full refunds.
+     * @param string $note (Optional) Custom memo about the refund.
+     * @param array $resultData PayPal response
+     * 
+     * @return bool
+     */
+	public function doRefund($transactionId, $invoice = '', $isPartial = false,
+							 $amount = 0, $currencyCode = 'USD', $note = '', &$resultData) {
+		$data = array('METHOD' => 'RefundTransaction',
+					  'TRANSACTIONID' => $transactionId,
+					  'INVOICEID' => $invoice,
+					  'REFUNDTYPE' => $isPartial ? 'Partial' : 'Full',
+					  'NOTE' => $note);
+		if ($isPartial) {
+			$data['AMT'] = $amount;
+			$data['CURRENCYCODE'] = $currencyCode;
+		}
+		
+		if (!$resultData = $this->runQueryWithParams($data)) return false;
+        if ($resultData['ACK'] == 'SUCCESS') return true;
+		return false;
+	}
     
 }
 

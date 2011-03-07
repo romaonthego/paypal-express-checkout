@@ -12,6 +12,10 @@
 
   $paypal->doPayment($_GET['token'], $_GET['PayerID'], $resultData)
 
+== 4. Perform refund based on transaction ID (returned from doPayment method)
+
+  $paypal->doRefund($transactionId, 'inv123', false, 0, 'USD', '', $resultData)
+
 For more information see index.php file.
 
 NOTE: 
