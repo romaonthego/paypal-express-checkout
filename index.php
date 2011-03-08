@@ -19,12 +19,13 @@ switch ($_GET['action']) {
         break;
     
     case "success": // Paypal says everything's fine, do the charge (user redirected to $gateway->returnUrl)
-        if ($paypal->doPayment($_GET['token'], $_GET['PayerID'], $resultData))
-            echo "Success!"; else {
-                echo "Debugging what went wrong: ";
-                print_r($resultData);
-            }
-        break;
+        if ($transactionId = $paypal->doPayment($_GET['token'], $_GET['PayerID'], $resultData)) {
+			echo "Success! Transaction ID: ".$transactionId;
+		} else {
+				echo "Debugging what went wrong: ";
+				print_r($resultData);
+			}
+		break;
 
     case "refund":
         $transactionId = '9SU82364E9556505C';

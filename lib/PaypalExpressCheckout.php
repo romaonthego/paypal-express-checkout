@@ -29,7 +29,7 @@ class PaypalExpressCheckout extends PaypalBase {
      * 
      * @param float $amount Amount (2 numbers after decimal point)
      * @param string $desc Item description
-     * @param string $invoice Invoice number (can be omitted)
+     * @param string $invoice (Optional) Your own invoice or tracking number.
      * @param string $currency 3-letter currency code (USD, GBP, CZK etc.)
      * @param array $resultData PayPal response
      * 
@@ -96,11 +96,11 @@ class PaypalExpressCheckout extends PaypalBase {
                       'METHOD' =>'DoExpressCheckoutPayment');
         
         if (!$resultData = $this->runQueryWithParams($data)) return false;
-        if ($resultData['ACK'] == 'SUCCESS') return true;
+        if ($resultData['ACK'] == 'SUCCESS') return $resultData['TRANSACTIONID'];
         return false;
     }
-    
-    /**
+	
+	/**
      * Perform refund base on transaction ID
      * 
      * If OK, returns true
@@ -116,22 +116,22 @@ class PaypalExpressCheckout extends PaypalBase {
      * 
      * @return bool
      */
-    public function doRefund($transactionId, $invoice = '', $isPartial = false,
-                             $amount = 0, $currencyCode = 'USD', $note = '', &$resultData) {
-        $data = array('METHOD' => 'RefundTransaction',
-                      'TRANSACTIONID' => $transactionId,
-                      'INVOICEID' => $invoice,
-                      'REFUNDTYPE' => $isPartial ? 'Partial' : 'Full',
-                      'NOTE' => $note);
-        if ($isPartial) {
-            $data['AMT'] = $amount;
-            $data['CURRENCYCODE'] = $currencyCode;
-        }
-        
-        if (!$resultData = $this->runQueryWithParams($data)) return false;
+	public function doRefund($transactionId, $invoice = '', $isPartial = false,
+							 $amount = 0, $currencyCode = 'USD', $note = '', &$resultData) {
+		$data = array('METHOD' => 'RefundTransaction',
+					  'TRANSACTIONID' => $transactionId,
+					  'INVOICEID' => $invoice,
+					  'REFUNDTYPE' => $isPartial ? 'Partial' : 'Full',
+					  'NOTE' => $note);
+		if ($isPartial) {
+			$data['AMT'] = $amount;
+			$data['CURRENCYCODE'] = $currencyCode;
+		}
+		
+		if (!$resultData = $this->runQueryWithParams($data)) return false;
         if ($resultData['ACK'] == 'SUCCESS') return true;
-        return false;
-    }
+		return false;
+	}
     
 }
 
