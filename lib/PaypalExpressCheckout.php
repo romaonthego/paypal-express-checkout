@@ -35,15 +35,33 @@ class PaypalExpressCheckout extends PaypalBase {
      * 
      * @return bool
      */
-    public function doExpressCheckout($amount, $description, $invoice = '', $currency = 'USD', &$resultData = array()){
+    public function doExpressCheckout($amount, $description, $invoice = '', $currency = 'USD', $shipping = false, &$resultData = array()){
         $data = array('PAYMENTACTION' =>'Sale',
                       'AMT' => $amount,
                       'DESC' => $description,
-                      'NOSHIPPING' => "1",
                       'ALLOWNOTE' => "0",
                       'CURRENCYCODE' => $currency,
                       'METHOD' => 'SetExpressCheckout');
-
+                      
+        if($shipping === false) {
+        	$data['NOSHIPPING'] = "1";
+				}
+				else if($shipping === true) {
+					// let the merchant decide the address
+				}
+				else {
+					// address specified by the customer
+					$data['ADDROVERRIDE'] = 1;
+					$data['PAYMENTREQUEST_0_SHIPTONAME'] = $shipping['name'];
+					$data['PAYMENTREQUEST_0_SHIPTOSTREET'] = $shipping['street_address_1'];
+					$data['PAYMENTREQUEST_0_SHIPTOSTREET2'] = $shipping['street_address_2'];
+					$data['PAYMENTREQUEST_0_SHIPTOCITY'] = $shipping['city'];
+					$data['PAYMENTREQUEST_0_SHIPTOSTATE'] = $shipping['state_code'];
+					$data['PAYMENTREQUEST_0_SHIPTOCOUNTRYCODE'] = $shipping['country_code'];
+					$data['PAYMENTREQUEST_0_SHIPTOZIP'] = $shipping['zip'];
+					$data['PAYMENTREQUEST_0_SHIPTOPHONENUM'] = $shipping['phone_number'];
+				}
+				
         $data['CUSTOM'] = $amount.'|'.$currency.'|'.$invoice;
         if ($invoice) $data['INVNUM'] = $invoice;
 
@@ -64,7 +82,7 @@ class PaypalExpressCheckout extends PaypalBase {
      * 
      * @return array $resultData PayPal response
      */
-    protected function getCheckoutDetails($token) {
+    public function getCheckoutDetails($token) {
         $data = array('TOKEN' => $token,
                       'METHOD' =>'GetExpressCheckoutDetails');
         
@@ -84,19 +102,19 @@ class PaypalExpressCheckout extends PaypalBase {
      * 
      * @return bool
      */
-    public function doPayment($token, $payerId, &$resultData = array()) {
+    public function doPayment($token, $payerId, $total_amount = null, &$resultData = array()) {
         $details = $this->getCheckoutDetails($token);
         if (!$details) return false;
         list($amount, $currency, $invoice) = explode('|', $details['CUSTOM']);
         $data = array('PAYMENTACTION' => 'Sale',
                       'PAYERID' => $payerId,
                       'TOKEN' => $token,
-                      'AMT' => $amount,
+                      'AMT' => $total_amount ? $total_amount : $amount,
                       'CURRENCYCODE' => $currency,
                       'METHOD' =>'DoExpressCheckoutPayment');
         
         if (!$resultData = $this->runQueryWithParams($data)) return false;
-        if ($resultData['ACK'] == 'SUCCESS') return $resultData['TRANSACTIONID'];
+        if ($resultData['ACK'] == 'SUCCESS') return $resultData;
         return false;
     }
 	
