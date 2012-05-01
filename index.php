@@ -19,7 +19,7 @@ if (!isset($resultData)) {
     $resultData = Array();
 }
 
-if (isset($_GET['action']) {
+if (isset($_GET['action'])) {
     $action = $_GET['action'];
 }
 
@@ -29,7 +29,7 @@ switch ($_GET['action']) {
         break;
     
     case "success": // Paypal says everything's fine, do the charge (user redirected to $gateway->returnUrl)
-        if ($transaction =  = $paypal->doPayment($_GET['token'], $_GET['PayerID'], $resultData)) {
+        if ($transaction = $paypal->doPayment($_GET['token'], $_GET['PayerID'], $resultData)) {
 			echo "Success! Transaction ID: ".$transaction['TRANSACTIONID'];
 		} else {
 				echo "Debugging what went wrong: ";
