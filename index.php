@@ -13,14 +13,24 @@ $gateway->cancelUrl = "http://test.site/?action=cancel";
 
 $paypal = new PaypalExpressCheckout($gateway);
 
+$shipping = false;
+
+if (!isset($resultData)) {
+    $resultData = Array();
+}
+
+if (isset($_GET['action']) {
+    $action = $_GET['action'];
+}
+
 switch ($_GET['action']) {
     case "": // Index page, here you should be redirected to Paypal
-        $paypal->doExpressCheckout(123.45, 'Test service', 'inv123', 'USD', $resultData);
+        $paypal->doExpressCheckout(123.45, 'Test service', 'inv123', 'USD', $shipping, $resultData);
         break;
     
     case "success": // Paypal says everything's fine, do the charge (user redirected to $gateway->returnUrl)
-        if ($transactionId = $paypal->doPayment($_GET['token'], $_GET['PayerID'], $resultData)) {
-			echo "Success! Transaction ID: ".$transactionId;
+        if ($transaction =  = $paypal->doPayment($_GET['token'], $_GET['PayerID'], $resultData)) {
+			echo "Success! Transaction ID: ".$transaction['TRANSACTIONID'];
 		} else {
 				echo "Debugging what went wrong: ";
 				print_r($resultData);
